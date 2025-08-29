@@ -5,6 +5,7 @@ import re
 
 #--------------------------------------------------------------------------------------------------------------------
 """
+this is my dnd discord bot just sort of a project i chose to partake in to challenge myself.
 
 """
 # Intents setup
