@@ -235,4 +235,3 @@ async def on_message(message):
         else:
             await message.channel.send("Usage: `!roll 2d6`, `!roll d20`, etc.")
 # Run the bot
-bot.run('MTM3NDk2Mjg3Nzk5MTA5NjM2MQ.GF40Cb.NCHi2Pg2_DpAh9Eg2RvE8qD7KkRfeIoEpzooAc')
