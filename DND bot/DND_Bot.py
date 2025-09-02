@@ -218,6 +218,18 @@ async def on_message(message):
         round_count = 1
         await message.channel.send("Initiative has ended. Combat is now finished.")
         return
+    
+    ## Concentration checker
+    if message.content.startswith("!Con"):
+        # needs to attach a con spell to a player
+        # needs to keep track of initiaitive and time till con spell expires
+        try:
+            _, spell, player, duration = message.content.strip().split()
+            
+                
+    
+
+        
 
 
     # Roll command, e.g., !roll d6 or !roll d20 ----------
