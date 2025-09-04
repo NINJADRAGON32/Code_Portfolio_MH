@@ -224,7 +224,13 @@ async def on_message(message):
         # needs to attach a con spell to a player
         # needs to keep track of initiaitive and time till con spell expires
         try:
-            _, spell, player, duration = message.content.strip().split()
+            _, player, spell, duration = message.content.strip().split()
+            await message.channel.send(f"{player} is now concentrating on {spell} for {duration} turns")
+            if initiative_list == []:
+                duration-=duration
+        except ValueError:
+            await message.channel.send("please input the spell, player, duration like such \n \t !con [player] [spell] [duration]")
+
             
                 
     
