@@ -5,7 +5,7 @@ import re
 
 #--------------------------------------------------------------------------------------------------------------------
 """
-this is my dnd discord bot just sort of a project i chose to partake in to challenge myself.
+    This is A discord application meant to be used in an asynchronous settings so that long distance friends can play DND together easily and accesibly.
 
 """
 # Intents setup
@@ -219,6 +219,14 @@ async def on_message(message):
         await message.channel.send("Initiative has ended. Combat is now finished.")
         return
     
+
+
+
+    # new initiaitive list
+    if message.content.startswith("!init start"):
+        round_count = 0
+        initiative_list=[]
+        
     ## Concentration checker
     if message.content.startswith("!Con"):
         # needs to attach a con spell to a player
@@ -230,10 +238,9 @@ async def on_message(message):
                 duration-=duration
         except ValueError:
             await message.channel.send("please input the spell, player, duration like such \n \t !con [player] [spell] [duration]")
-
-            
+            if duration ==0 :
+                await message.channel.send(f"{player} has lost concentration")            
                 
-    
 
         
 
