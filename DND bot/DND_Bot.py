@@ -224,8 +224,14 @@ async def on_message(message):
 
     # new initiaitive list
     if message.content.startswith("!init start"):
-        round_count = 0
-        initiative_list=[]
+        try:
+            _,_,player,roll = message.content.strip().split()
+            round_count = 0
+            initiative_Dict=[]
+            initiative_Dict.append(player,roll)
+        except ValueError:
+            await message.channel.send("Usage: !init start [player] [roll] ")
+
         
     ## Concentration checker
     if message.content.startswith("!Con"):
