@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 import discord
 import random
 import re
@@ -8,6 +10,10 @@ import re
     This is A discord application meant to be used in an asynchronous settings so that long distance friends can play DND together easily and accesibly.
 
 """
+#  security for github
+load_dotenv()
+TOKEN = os.getenv("DISCORD_TOKEN")
+
 # Intents setup
 intents = discord.Intents.default()
 intents.message_content = True
@@ -100,6 +106,7 @@ help = """
 """
 
 # main----------------------------------------------------------------------------------------------------------------
+@bot.event
 async def on_ready():
     print(f'Logged in as {bot.user}!')
 
@@ -162,7 +169,6 @@ async def on_message(message):
         global round_count
         if not initiative_list:
             await message.channel.send("Initiative order empty. :(")
-            order(parallelinitroll)
             return
         msg = f"**Initiative Order (Round {round_count}):**\n"
         for i, entry in enumerate(initiative_list):
@@ -176,8 +182,6 @@ async def on_message(message):
     if message.content.startswith("!init next"):
         if not initiative_list:
             await message.channel.send("No one is in the initiative tracker.")
-            initCharacters=[]
-            parallelinitroll=[]
             return
 
         original = initiative_list[0]  # remember whose turn it was
@@ -221,6 +225,7 @@ async def on_message(message):
         round_count = 1
         await message.channel.send("Initiative has ended. Combat is now finished.")
         return
+    
 
 
 
@@ -268,3 +273,6 @@ async def on_message(message):
         else:
             await message.channel.send("Usage: `!roll 2d6`, `!roll d20`, etc.")
 # Run the bot
+if TOKEN is None:
+    print("ERROR: Bot token not found. Check your .env file")
+bot.run(TOKEN)
