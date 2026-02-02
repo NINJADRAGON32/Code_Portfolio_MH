@@ -273,6 +273,3 @@ async def on_message(message):
         else:
             await message.channel.send("Usage: `!roll 2d6`, `!roll d20`, etc.")
 # Run the bot
-if TOKEN is None:
-    print("ERROR: Bot token not found. Check your .env file")
-bot.run(TOKEN)

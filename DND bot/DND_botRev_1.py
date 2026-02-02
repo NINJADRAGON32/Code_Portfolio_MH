@@ -102,11 +102,8 @@ help = """
     f"Hello {message.author}, to use DiceBot3000 simply type the following commands into the chat: \n 
     !roll : followed by how many of a type of dice you wish to roll\n 
     !npc : to generate a rndom name \n 
-    !init (arg): \n
-    \t\t !init (add) [name] [roll]; to add  someone to the initiative tracker\n
-    \t\t !init (show); to show the initiative turn order\n
-    \t\t !init (next); to move to signify a turn end and move to the next turn in the turn order\n
-    \t\t !init (end); to reset the initiative list and end combat\n
+    !con set : to create a set a concentration spell for a player of choice
+    !con break to break a concentration on a certain player.
 
 """
 
@@ -146,18 +143,32 @@ async def on_message(message):
     
    
     ## Concentration checker
-    if message.content.startswith("!Con Set"):
+    # setting the concentration
+    if message.content.startswith("!con set"):
         # needs to attach a con spell to a player
-        # needs to keep track of initiaitive and time till con spell expires
         try:
             _,_, player, spell = message.content.strip().split()
             if player in concentration:
-                await message.channel.send(f"{player} is already concentrating on a spell, would you like to break this concentration for a new spell?")
-                if message.content.startswith("y" or "Y"):
-                    await message.channel.send(f"{player} is now concentrating on {spell}")
-                    concentration[player]= spell
+                await message.channel.send(f"{player} is already concentrating on a spell, if you would like to break this concentration for a new spell use !con break first.")
+            else: 
+                await message.channel.send(f"{player} is now concentrating on {spell}")
+                concentration[player]= spell
         except ValueError:
-            await message.channel.send("please input the spell, player, duration like such \n \t !con [player] [spell] ") 
+            await message.channel.send("please input the spell, player such that !con [player] [spell] ") 
+
+    # breaking the concentraion
+
+    if message.content.startswith("!con break"):
+        # needs to attach a con spell to a player
+        try:
+            _,_, player = message.content.strip().split()
+            if player in concentration:
+                await message.channel.send(f"{player} is no longer concentrating on {concentration[player[spell]]}")
+                del concentration[player]
+            else: 
+                await message.channel.send(f"{player} is not concentrating on a spell")
+        except ValueError:
+            await message.channel.send("to use con break type (!con break [player])") 
         
                 
 
