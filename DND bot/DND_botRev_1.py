@@ -23,7 +23,10 @@ bot = discord.Client(intents=intents)
 
 # Libraries-----------------------------------------------------------------------------------------------------------
 # initiative list S
-initiative_list =[]
+initiative_order = []
+newcomers = []
+turn_index = 0
+combat_started = False
 #initiative turn counter
 round_count=1
 
@@ -138,121 +141,20 @@ async def on_message(message):
         return
     
     # initiative roller and tracker ----------
-    ## ADD to initiative 
-    if message.content.startswith("!init add"):
-        try:
-            _, _, name, roll = message.content.strip().split()
-            roll = int(roll)
-            new_entry = {"name": name, "roll": roll}
-
-            # Store current active player (at front of list)
-            current = initiative_list[0] if initiative_list else None
-
-            # Add new entry and sort
-            initiative_list.append(new_entry)
-            initiative_list.sort(key=lambda x: x['roll'], reverse=True)
-
-            # Rotate list back so current player is still at front
-            if current:
-                while initiative_list[0] != current:
-                    initiative_list.append(initiative_list.pop(0))
-
-            await message.channel.send(f"Added **{name}** with initiative **{roll}** to the turn order.")
-        except ValueError:
-            await message.channel.send("Usage: `!init add [name] [roll]` (e.g. `!init add Bob 13`)")
-        return  
-        
-
     
-    ## SHOW the initiative order
-    if message.content.startswith("!init show"):
-        global round_count
-        if not initiative_list:
-            await message.channel.send("Initiative order empty. :(")
-            return
-        msg = f"**Initiative Order (Round {round_count}):**\n"
-        for i, entry in enumerate(initiative_list):
-            marker = "➡️ " if i == 0 else ""
-            msg += f"{marker}{entry['name']} (init {entry['roll']})\n"
-        await message.channel.send(msg)
-        return
-
-    
-    ## NEXT turn in the order
-    if message.content.startswith("!init next"):
-        if not initiative_list:
-            await message.channel.send("No one is in the initiative tracker.")
-            return
-
-        original = initiative_list[0]  # remember whose turn it was
-        skipped_delayed = []
-
-        while True:
-            current = initiative_list.pop(0)  
-            if current.get("delayed", False):
-                current["delayed"] = False
-                initiative_list.append(current)  
-                skipped_delayed.append(current["name"])
-            else:
-                initiative_list.append(current)  
-                break  
-
-            # If we've gone full circle, stop
-            if initiative_list[0] == original:
-                break
-
-        await message.channel.send(f"It's now **{initiative_list[0]['name']}**'s turn!")
-
-        if skipped_delayed:
-            await message.channel.send(
-                f"Skipped delayed turn(s) for: {', '.join(skipped_delayed)}"
-            )
-
-        # Display updated initiative
-        msg = "**Updated Initiative Order:**\n"
-        for i, entry in enumerate(initiative_list):
-            marker = "➡️ " if i == 0 else ""
-            delayed_note = " (delayed)" if entry.get("delayed") else ""
-            msg += f"{marker}{entry['name']} (init {entry['roll']}){delayed_note}\n"
-
-        await message.channel.send(msg)
-        return
-
-        
-    ## END initiative
-    if message.content.startswith("!init end"):
-        initiative_list.clear()
-        round_count = 1
-        await message.channel.send("Initiative has ended. Combat is now finished.")
-        return
-    
-
-
-
-    # # new initiaitive list
-    # if message.content.startswith("!init start"):
-    #     try:
-    #         _,_,player,roll = message.content.strip().split()
-    #         round_count = 0
-    #         initiative_Dict=[]
-    #         initiative_Dict.append(player,roll)
-    #     except ValueError:
-    #         await message.channel.send("Usage: !init start [player] [roll] ")
-
-        
+   
     ## Concentration checker
     if message.content.startswith("!Con"):
         # needs to attach a con spell to a player
         # needs to keep track of initiaitive and time till con spell expires
         try:
-            _, player, spell, duration = message.content.strip().split()
-            await message.channel.send(f"{player} is now concentrating on {spell} for {duration} turns")
-            if initiative_list == []:
-                duration-=duration
+            _, player, spell = message.content.strip().split()
+            await message.channel.send(f"{player} is now concentrating on {spell}")
+            
+
         except ValueError:
-            await message.channel.send("please input the spell, player, duration like such \n \t !con [player] [spell] [duration]")
-            if duration ==0 :
-                await message.channel.send(f"{player} has lost concentration")            
+            await message.channel.send("please input the spell, player, duration like such \n \t !con [player] [spell] [duration]") 
+        
                 
 
         
