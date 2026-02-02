@@ -151,8 +151,11 @@ async def on_message(message):
         # needs to keep track of initiaitive and time till con spell expires
         try:
             _,_, player, spell = message.content.strip().split()
-            await message.channel.send(f"{player} is now concentrating on {spell}")
-            concentration[player]= spell
+            if player in concentration:
+                await message.channel.send(f"{player} is already concentrating on a spell, would you like to break this concentration for a new spell?")
+                if message.content.startswith("y" or "Y"):
+                    await message.channel.send(f"{player} is now concentrating on {spell}")
+                    concentration[player]= spell
         except ValueError:
             await message.channel.send("please input the spell, player, duration like such \n \t !con [player] [spell] ") 
         
