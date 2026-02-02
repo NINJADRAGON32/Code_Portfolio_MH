@@ -22,6 +22,8 @@ intents.message_content = True
 bot = discord.Client(intents=intents)
 
 # Libraries-----------------------------------------------------------------------------------------------------------
+# concentration
+concentration = {}
 # initiative list S
 initiative_order = []
 newcomers = []
@@ -144,16 +146,15 @@ async def on_message(message):
     
    
     ## Concentration checker
-    if message.content.startswith("!Con"):
+    if message.content.startswith("!Con Set"):
         # needs to attach a con spell to a player
         # needs to keep track of initiaitive and time till con spell expires
         try:
-            _, player, spell = message.content.strip().split()
+            _,_, player, spell = message.content.strip().split()
             await message.channel.send(f"{player} is now concentrating on {spell}")
-            
-
+            concentration[player]= spell
         except ValueError:
-            await message.channel.send("please input the spell, player, duration like such \n \t !con [player] [spell] [duration]") 
+            await message.channel.send("please input the spell, player, duration like such \n \t !con [player] [spell] ") 
         
                 
 
