@@ -94,9 +94,10 @@ last_names = ["Alarwynn", "Azurith", "Aethelnoth", "Arnoria", "Aurielis", "Anvin
 help = """
     f"Hello {message.author}, to use DiceBot3000 simply type the following commands into the chat: \n 
     !roll : followed by how many of a type of dice you wish to roll\n 
-    !npc : to generate a rndom name \n 
+    !npc : to generate a random name \n 
     !con set : to create a set a concentration spell for a player of choice
     !con break to break a concentration on a certain player.
+    !con show to show who is concentrating on what
 
 """
 
@@ -152,31 +153,29 @@ async def on_message(message):
     # breaking the concentraion
 
     if message.content.startswith("!con break"):
-        # needs to attach a con spell to a player
         try:
             _,_, player = message.content.strip().split()
             if player in concentration:
-                await message.channel.send(f"{player} is no longer concentrating on {concentration[player[spell]]}")
+                await message.channel.send(f"{player} is no longer concentrating on {concentration[player]}")
                 del concentration[player]
             else: 
                 await message.channel.send(f"{player} is not concentrating on a spell")
         except ValueError:
             await message.channel.send("to use con break type (!con break [player])") 
-
-    #  showing the concentration
     
+    #showing concentration
+
     if message.content.startswith("!con show"):
         if not concentration:
             await message.channel.send("No one is currently concentrating on a spell.")
         else:
-            msg = "**🧙 Concentration Tracker:**\n"
+            msg = "** Concentration Tracker:**\n"
             for player, spell in concentration.items():
                 msg += f"• {player} → {spell}\n"
 
-        await message.channel.send(msg)
-                
+            await message.channel.send(msg)
 
-        
+
     # Roll command, e.g., !roll d6 or !roll d20 ----------
     if message.content.startswith('!roll'):
         match = re.match(r'!roll (\d*)d(\d+)', message.content)
@@ -186,9 +185,9 @@ async def on_message(message):
             if num_dice <= 100:
                 rolls = [random.randint(1, sides) for _ in range(num_dice)]
                 total = sum(rolls)
-                await message.channel.send(f'{message.author} rolled {num_dice}d{sides} 🎲 That rolls: {rolls} → Total: {total}')
+                await message.channel.send(f'{message.author} rolled {num_dice}d{sides}  That rolls: {rolls} → Total: {total}')
             else:
-                await message.channel.send("🚫 Too many dice (max 100).")
+                await message.channel.send(" Too many dice (max 100).")
         else:
             await message.channel.send("Usage: `!roll 2d6`, `!roll d20`, etc.")
 # Run the bot
