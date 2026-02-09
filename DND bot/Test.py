@@ -27,16 +27,16 @@
 #     print(init_add_player(UIP,UIR))
 
 # con testing 
-ui = str(input("enter (con set) _[player]_[spell]"))
-concentration={}
-while ui != "stop":
-    try:
-        _,_, player, spell = ui.strip().split()
-        if player in concentration:
-            ui= str(input(f"{player} is already concentrating on a spell do you still wish to change concentrations (y/n):"))
-            if ui == "y":
-                print(f"{player} is now concentrating on {spell}")
-                concentration[player]= spell
-    except ValueError:
-        None
+# ui = str(input("enter (con set) _[player]_[spell]"))
+# concentration={}
+# while ui != "stop":
+#     try:
+#         _,_, player, spell = ui.strip().split()
+#         if player in concentration:
+#             ui= str(input(f"{player} is already concentrating on a spell do you still wish to change concentrations (y/n):"))
+#             if ui == "y":
+#                 print(f"{player} is now concentrating on {spell}")
+#                 concentration[player]= spell
+#     except ValueError:
+#         None
 

@@ -114,7 +114,8 @@ async def on_message(message):
         return
     
     # Seperates the content of the message from the parent and formats it
-    content = message.content.strip()
+    content = message.content.lower()
+
 
     
     # HELP!!!!!!!!!!!!!! ----------
@@ -122,7 +123,7 @@ async def on_message(message):
         await message.channel.send(help)
 
     # Easter eggs!!! ----------
-    elif message.content.startswith("!hello there") or message.content.startswith("!hellothere") :
+    elif content.startswith("!hello there") or message.content.startswith("!hellothere") :
         await message.channel.send("General Kenobi")
         return
     
@@ -138,7 +139,7 @@ async def on_message(message):
    
     ## Concentration checker
     # setting the concentration
-    elif message.content.startswith("!con set"):
+    if message.content.startswith("!con set"):
         # needs to attach a con spell to a player
         try:
             _,_, player, spell = message.content.strip().split()
@@ -174,6 +175,10 @@ async def on_message(message):
                 msg += f"• {player} → {spell}\n"
 
             await message.channel.send(msg)
+    
+    elif message.content.startswith("!con clear"):
+        concentration.clear()
+        await message.channel.send ("All concentrations have been cleared")
 
     # roll for stats
     
@@ -194,8 +199,6 @@ async def on_message(message):
             await message.channel.send(msg)
         except ValueError:
             await message.channel.send("to use stat roller type: !stats (character name) (character race) ")
-
-
 
 
     # Roll command, e.g., !roll d6 or !roll d20 ----------
