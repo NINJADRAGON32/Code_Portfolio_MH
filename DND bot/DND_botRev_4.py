@@ -8,6 +8,7 @@ import re
 #--------------------------------------------------------------------------------------------------------------------
 """
     This is A discord application meant to be used in an asynchronous settings so that long distance friends can play DND together easily and accesibly.
+    Note: This was made with help of AI software.
 
 """
 #  security for github
@@ -22,6 +23,8 @@ intents.message_content = True
 bot = discord.Client(intents=intents)
 
 # Libraries-----------------------------------------------------------------------------------------------------------
+#status
+status = {}
 # concentration
 concentration = {}
 
@@ -121,7 +124,7 @@ async def on_message(message):
 
     
     # HELP!!!!!!!!!!!!!! ----------
-    if message.content.startswith("!help"):
+    if content.startswith("!help"):
         await message.channel.send(help)
 
     # Easter eggs!!! ----------
@@ -130,19 +133,79 @@ async def on_message(message):
         return
     
     # NPC name generator ----------
-    elif message.content.startswith("!npc"):
+    elif content.startswith("!npc"):
         first = random.choice(first_names)
         last = random.choice(last_names)
         await message.channel.send(f" *{first} {last}.*")
         return
     
     # initiative roller and tracker ------------------------------------------------------------------------
+    '''
+        for the initiative roller and tracker im thinking of making a copy of every tracker so that i can integrate it into the turn counter. 
+        Maybe I could use a variable called combat and set combat equal to false by default and true after the initiative tracker has been set.
+    '''
 
+
+
+
+    #Status tracker ----------------------------------------------------------------------------------------
+    # add a status
+    if content.startswith("!status add"):
+        try:
+            _,_,player,condition = message.content.strip().split()
+            if player not in status:
+                status[player] = []
+            
+            if condition.lower() in status[player]:
+                await message.channel.send(f" {player} already has the **{condition}** condition.")
+            else: 
+                status[player].append(condition.lower())
+                await message.channel.send(f" {player} is now **{condition}**.")
+        except ValueError:
+            await message.channel.send("to use status add type: !status add [player] [condition]")
     
+    # remove status
+    elif content.startswith("!status remove"):
+        try:
+            _,_,player,condition = message.content.strip().split()
+            if player not in status:
+                await message.channel.send(f"{player} is not afflicted by any condition.")
+            
+            elif condition.lower() in status[player]:
+                status[player].remove(condition.lower())
+                if not status[player]:
+                    del status[player] 
+                await message.channel.send(f" {player} is no longer afflicted by **{condition}**.")
+            else:
+                if not status[player]:
+                    del status[player] 
+                await message.channel.send(f" {player} is not afflicted by **{condition}**.")
+
+        except ValueError:
+            await message.channel.send("to use status remove type: !status remove [player] [condition]")
+    
+    # show all satuses
+    elif content.startswith("!status show"):
+        if not status:
+            await message.channel.send("no one is afflicted with any condition")
+        else:
+            msg = "** Status Tracker:**\n"
+            for player, conditions in status.items():
+                msg += f"• {player}: {', '.join(conditions)}\n"
+            await message.channel.send(msg)
+    
+    #status clear
+    elif content.startswith("!status clear"):
+        status.clear()
+        await message.channel.send("All status conditions have been cleared.")
+
+
+        
+
    
     ## Concentration checker -------------------------------------------------------------------------------
     # setting the concentration
-    if message.content.startswith("!con set"):
+    if content.startswith("!con set"):
         # needs to attach a con spell to a player
         try:
             _,_, player, spell = message.content.strip().split()
@@ -156,7 +219,7 @@ async def on_message(message):
 
     # breaking the concentraion
 
-    elif message.content.startswith("!con break"):
+    elif content.startswith("!con break"):
         try:
             _,_, player = message.content.strip().split()
             if player in concentration:
@@ -169,7 +232,7 @@ async def on_message(message):
     
     #showing concentration
 
-    elif message.content.startswith("!con show"):
+    elif content.startswith("!con show"):
         if not concentration:
             await message.channel.send("No one is currently concentrating on a spell.")
         else:
@@ -179,13 +242,13 @@ async def on_message(message):
 
             await message.channel.send(msg)
     
-    elif message.content.startswith("!con clear"):
+    elif content.startswith("!con clear"):
         concentration.clear()
         await message.channel.send ("All concentrations have been cleared")
 
-    # roll for stats -------------------------------------------------------------------------------------------------------
+    # roll for stats ---------------------------------------------------------------------------------------------
     
-    elif message.content.startswith('!stats'):
+    elif content.startswith('!stats'):
         try:
             _, name, race = message.content.strip().split()
             stat_names = ["STR", "DEX", "CON", "INT", "WIS", "CHA"]
@@ -205,8 +268,8 @@ async def on_message(message):
 
 
     # Roll command, e.g., !roll d6 or !roll d20 ------------------------------------------------------------------------
-    elif message.content.startswith('!roll'):
-        match = re.match(r'!roll (\d*)d(\d+)', message.content)
+    elif content.startswith('!roll'):
+        match = re.match(r'!roll (\d*)d(\d+)', content)
         if match:
             num_dice = int(match.group(1)) if match.group(1) else 1
             sides = int(match.group(2))
