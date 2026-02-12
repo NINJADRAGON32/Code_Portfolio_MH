@@ -96,8 +96,10 @@ help = """
     !roll : followed by how many of a type of dice you wish to roll\n 
     !npc : to generate a random name \n 
     !con set : to create a set a concentration spell for a player of choice
-    !con break to break a concentration on a certain player.
-    !con show to show who is concentrating on what
+    !con break : to break a concentration on a certain player.
+    !con show : to show who is concentrating on what
+    !con clear : to clear all concentrations
+    !stats [name] [race] to roll for stats for a character
 
 """
 
@@ -113,7 +115,7 @@ async def on_message(message):
     if message.author == bot.user:
         return
     
-    # Seperates the content of the message from the parent and formats it
+
     content = message.content.lower()
 
 
@@ -123,7 +125,7 @@ async def on_message(message):
         await message.channel.send(help)
 
     # Easter eggs!!! ----------
-    elif content.startswith("!hello there") or message.content.startswith("!hellothere") :
+    elif content.startswith("!hello there") or content.startswith("!hellothere") :
         await message.channel.send("General Kenobi")
         return
     
@@ -134,10 +136,11 @@ async def on_message(message):
         await message.channel.send(f" *{first} {last}.*")
         return
     
-    # initiative roller and tracker ----------
+    # initiative roller and tracker ------------------------------------------------------------------------
+
     
    
-    ## Concentration checker
+    ## Concentration checker -------------------------------------------------------------------------------
     # setting the concentration
     if message.content.startswith("!con set"):
         # needs to attach a con spell to a player
@@ -201,7 +204,7 @@ async def on_message(message):
             await message.channel.send("to use stat roller type: !stats (character name) (character race) ")
 
 
-    # Roll command, e.g., !roll d6 or !roll d20 ----------
+    # Roll command, e.g., !roll d6 or !roll d20 ------------------------------------------------------------------------
     elif message.content.startswith('!roll'):
         match = re.match(r'!roll (\d*)d(\d+)', message.content)
         if match:
