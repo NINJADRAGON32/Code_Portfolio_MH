@@ -320,7 +320,7 @@ async def on_message(message):
                 }
 
         except ValueError:
-            await message.channel.send("please input the spell, player such that !con set [player] [spell] ") 
+            await message.channel.send("please input the spell, player such that !con set [player] [duration] [spell] ") 
 
     # breaking the concentraion
 
