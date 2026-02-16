@@ -122,6 +122,9 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
+    # globals 
+    global combat_active, initiative_order
+    global current_turn_index, round_number
 
     # This is here just incase so that the bot doesn't respond to itself
     if message.author == bot.user:
@@ -149,9 +152,12 @@ async def on_message(message):
         return
     
     # initiative roller and tracker ------------------------------------------------------------------------
+    #  TODO 
+    #  add support for concentration
+    #  add support for statuses
+    #  change the add function so that once the turn order has started if a character is added then they must wait until the next turn to take their turn regardless of what they roll.
     # start combat
     elif content.startswith("!combat start"):
-        global combat_active, initiative_order, current_turn_index, round_number
         combat_active = True
         initiative_order = []
         current_turn_index = 0
@@ -170,12 +176,17 @@ async def on_message(message):
             total = roll + dex_mod
 
             initiative_order.append({
-            "name": name,
+            "name": player,
             "initiative": total,
             "dex": dex_mod
             })
 
-            await message.channel.send(f"{name} rolled {roll} + {dex_mod} = **{total}**")
+            initiative_order.sort(
+            key=lambda x: (x["initiative"], x["dex"]),
+            reverse=True
+            )
+
+            await message.channel.send(f"{player} rolled {roll} + {dex_mod} = **{total}**")
 
         except ValueError:
             await message.channel.send("to use type: !init add [name] [dex_mod]")
@@ -186,10 +197,6 @@ async def on_message(message):
             await message.channel.send("No combatants added.")
             return
         
-        initiative_order.sort(
-        key=lambda x: (x["initiative"], x["dex"]),
-        reverse=True
-        )
         order_text = "**Initiative Order:**\n"
         for i, combatant in enumerate(initiative_order):
             order_text += f"{i+1}. {combatant['name']} ({combatant['initiative']})\n"
@@ -199,7 +206,6 @@ async def on_message(message):
     
     # next turn command
     elif content.startswith("!next"):
-        global current_turn_index, round_number
 
         if not combat_active:
             await message.channel.send("Combat is not active.")
@@ -214,15 +220,17 @@ async def on_message(message):
         next_name = initiative_order[current_turn_index]["name"]
         await message.channel.send(f"It is now **{next_name}**'s turn.")
 
+    # end combat
+    elif content.startswith("!end combat"):
+        if not combat_active:
+            await message.channel.send("Combat is not currently active.")
+            return
 
-
-
-
-
-
-
-
-
+        combat_active = False
+        initiative_order.clear()
+        current_turn_index = 0
+        round_number = 1
+        await message.channel.send("Combat has ended.")
 
 
     #Status tracker ----------------------------------------------------------------------------------------
