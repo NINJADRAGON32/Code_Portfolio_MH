@@ -23,6 +23,11 @@ intents.message_content = True
 bot = discord.Client(intents=intents)
 
 # Libraries-----------------------------------------------------------------------------------------------------------
+# combat engine
+combat_active = False
+initiative_order = []
+current_turn_index = 0
+round_number = 1
 #status
 status = {}
 # concentration
@@ -144,17 +149,85 @@ async def on_message(message):
         return
     
     # initiative roller and tracker ------------------------------------------------------------------------
-    '''
-        for the initiative roller and tracker im thinking of making a copy of every tracker so that i can integrate it into the turn counter. 
-        Maybe I could use a variable called combat and set combat equal to false by default and true after the initiative tracker has been set.
-    '''
+    # start combat
+    elif content.startswith("!combat start"):
+        global combat_active, initiative_order, current_turn_index, round_number
+        combat_active = True
+        initiative_order = []
+        current_turn_index = 0
+        round_number = 1
+        await message.channel.send("Combat has started, Use !init add [name] [dex modifier]")
+    
+    # add to the initiative/turn order
+    elif content.startswith("!init add"):
+        try:
+            _,_,player,dex_mod = message.content.strip().split()
+
+            dex_mod = int(dex_mod)
+
+            roll = random.randint(1, 20)
+
+            total = roll + dex_mod
+
+            initiative_order.append({
+            "name": name,
+            "initiative": total,
+            "dex": dex_mod
+            })
+
+            await message.channel.send(f"{name} rolled {roll} + {dex_mod} = **{total}**")
+
+        except ValueError:
+            await message.channel.send("to use type: !init add [name] [dex_mod]")
+    
+    # begin initiative.
+    elif content.startswith("!init begin"):
+        if not initiative_order:
+            await message.channel.send("No combatants added.")
+            return
+        
+        initiative_order.sort(
+        key=lambda x: (x["initiative"], x["dex"]),
+        reverse=True
+        )
+        order_text = "**Initiative Order:**\n"
+        for i, combatant in enumerate(initiative_order):
+            order_text += f"{i+1}. {combatant['name']} ({combatant['initiative']})\n"
+
+        await message.channel.send(order_text)
+        await message.channel.send(f"Round 1 begins!\nIt is {initiative_order[0]['name']}'s turn.")
+    
+    # next turn command
+    elif content.startswith("!next"):
+        global current_turn_index, round_number
+
+        if not combat_active:
+            await message.channel.send("Combat is not active.")
+            return
+        
+        current_turn_index += 1
+
+        if current_turn_index >= len(initiative_order):
+            current_turn_index = 0
+            round_number += 1
+        
+        next_name = initiative_order[current_turn_index]["name"]
+        await message.channel.send(f"It is now **{next_name}**'s turn.")
+
+
+
+
+
+
+
+
 
 
 
 
     #Status tracker ----------------------------------------------------------------------------------------
     # add a status
-    if content.startswith("!status add"):
+    elif content.startswith("!status add"):
         try:
             _,_,player,condition = message.content.strip().split(maxsplit=3)
             if player not in status:
@@ -209,7 +282,7 @@ async def on_message(message):
    
     ## Concentration checker -------------------------------------------------------------------------------
     # setting the concentration
-    if content.startswith("!con set"):
+    elif content.startswith("!con set"):
         # needs to attach a con spell to a player
         try:
             _,_, player, spell = message.content.strip().split(maxsplit=3)
