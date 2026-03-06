@@ -101,24 +101,82 @@ last_names = ["Alarwynn", "Azurith", "Aethelnoth", "Arnoria", "Aurielis", "Anvin
 
 help = """
 Hello! To use DiceBot3000, type:
+🎲 **DiceBot3000 Command List**
 
-!roll [dice]            → Roll dice (ex: !roll 2d6, !roll d20)
-!npc                    → Generate a random NPC name
-!con set [player] [spell]
+-----------------------------
+⚔️ **Combat / Initiative**
+!combat start
+    → Starts combat and resets initiative
+
+!init add [name] [dex_mod]
+    → Rolls initiative and adds a combatant
+
+!init begin
+    → Displays initiative order and begins round 1
+
+!next
+    → Advances to the next turn
+
+!end combat
+    → Ends combat and clears initiative
+
+-----------------------------
+🎲 **Dice Rolling**
+!roll d20
+!roll 2d6
+!roll 4d8
+    → Rolls dice and shows results (max 100 dice)
+
+-----------------------------
+🧙 **NPC Generator**
+!npc
+    → Generates a random NPC name
+
+-----------------------------
+💫 **Concentration Tracker**
+!con set [player] [rounds] [spell]
+    → Start concentrating on a spell
+
 !con break [player]
+    → Break concentration
+
 !con show
+    → Show all active concentration spells
+
 !con clear
+    → Clear all concentration
+
+-----------------------------
+🩸 **Status Tracker**
 !status add [player] [condition]
+
 !status remove [player] [condition]
+
 !status show
+    → Show all active conditions
+
 !status clear
+    → Remove all conditions
+
+-----------------------------
+📊 **Character Stats**
 !stats [name] [race]
+    → Rolls 4d6 drop lowest for all stats
+
+-----------------------------
+💬 **Fun**
+!hello there
+    → ???
+
+!help
+    → Shows this menu
 """
 
 # main----------------------------------------------------------------------------------------------------------------
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user}!')
+
 
 @bot.event
 async def on_message(message):
@@ -164,13 +222,12 @@ async def on_message(message):
         current_turn_index = 0
         round_number = 1
         await message.channel.send("Combat has started, Use !init add [name] [dex modifier]")
-    
+     
     # add to the initiative/turn order
     elif content.startswith("!init add"):
         try:
             _,_,player,dex_mod = message.content.strip().split()
-
-            if combat_active == True:
+            if combat_active:
             
                 dex_mod = int(dex_mod)
 
@@ -188,7 +245,7 @@ async def on_message(message):
                 key=lambda x: (x["initiative"], x["dex"]),
                 reverse=True
                 )
-            elif combat_active == False:
+            elif not combat_active:
                 await message.channel.send("combat has not been started")
 
             await message.channel.send(f"{player} rolled {roll} + {dex_mod} = **{total}**")
@@ -200,6 +257,10 @@ async def on_message(message):
     elif content.startswith("!init begin"):
         if not initiative_order:
             await message.channel.send("No combatants added.")
+            return
+        
+        if not combat_active:
+            await message.channel.send("Combat not active")
             return
         
         order_text = "**Initiative Order:**\n"
