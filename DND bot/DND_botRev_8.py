@@ -100,76 +100,93 @@ last_names = ["Alarwynn", "Azurith", "Aethelnoth", "Arnoria", "Aurielis", "Anvin
     "Ultharion", "Urvendil", "Uthrendar", "Uldoria","Renfro","Pillow","Gardner","Seaton","Sims","Gillet","Lamey"]
 
 help = """
-Hello! To use DiceBot3000, type:
 🎲 **DiceBot3000 Command List**
 
------------------------------
+--------------------------------
 ⚔️ **Combat / Initiative**
+
 !combat start
-    → Starts combat and resets initiative
+→ Starts combat and resets initiative
 
 !init add [name] [dex_mod]
-    → Rolls initiative and adds a combatant
+→ Rolls initiative and adds a combatant
 
 !init begin
-    → Displays initiative order and begins round 1
+→ Displays initiative order and begins Round 1
 
 !next
-    → Advances to the next turn
+→ Advances to the next turn and updates effects
+
+!combat
+→ Shows the full combat tracker
 
 !end combat
-    → Ends combat and clears initiative
+→ Ends combat and clears initiative
 
------------------------------
+
+--------------------------------
+🩸 **Status Tracker**
+
+!status add [player] [condition] [turns]
+→ Adds a condition with a duration
+
+!status remove [player] [condition]
+→ Removes a condition
+
+!status show
+→ Displays all active conditions
+
+!status clear
+→ Removes ALL conditions
+
+
+--------------------------------
+💫 **Concentration Tracker**
+
+!con set [player] [rounds] [spell]
+→ Start concentrating on a spell
+
+!con break [player]
+→ Break concentration
+
+!con show
+→ Display all active concentration
+
+!con clear
+→ Clear all concentration
+
+
+--------------------------------
 🎲 **Dice Rolling**
+
 !roll d20
 !roll 2d6
 !roll 4d8
-    → Rolls dice and shows results (max 100 dice)
+→ Rolls dice (max 100)
 
------------------------------
-🧙 **NPC Generator**
-!npc
-    → Generates a random NPC name
 
------------------------------
-💫 **Concentration Tracker**
-!con set [player] [rounds] [spell]
-    → Start concentrating on a spell
+--------------------------------
+📊 **Character Stat Generator**
 
-!con break [player]
-    → Break concentration
-
-!con show
-    → Show all active concentration spells
-
-!con clear
-    → Clear all concentration
-
------------------------------
-🩸 **Status Tracker**
-!status add [player] [condition]
-
-!status remove [player] [condition]
-
-!status show
-    → Show all active conditions
-
-!status clear
-    → Remove all conditions
-
------------------------------
-📊 **Character Stats**
 !stats [name] [race]
-    → Rolls 4d6 drop lowest for all stats
+→ Rolls 4d6 drop lowest for all stats
 
------------------------------
-💬 **Fun**
+
+--------------------------------
+🧙 **NPC Generator**
+
+!npc
+→ Generates a random NPC name
+
+
+--------------------------------
+💬 **Fun / Utility**
+
 !hello there
-    → ???
+→ ???
 
 !help
-    → Shows this menu
+→ Displays this help menu
 """
 
 # main----------------------------------------------------------------------------------------------------------------
